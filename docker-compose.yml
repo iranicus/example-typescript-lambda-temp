@@ -1,0 +1,25 @@
+##################################################################################################
+# Blank template for starting a LocalStack container with Docker Compose.
+# Localstack version releases: https://blog.localstack.cloud/category/News/
+##################################################################################################
+services:
+  localstack:
+    container_name: "localstack-main"
+    environment:
+      # enable for log level debug
+      DEBUG: 1
+      # Config options: https://docs.localstack.cloud/references/configuration/#core
+      DOCKER_SOCK: unix:///var/run/docker.sock      # Path to local docker socket
+      LOCALSTACK_AUTH_TOKEN: AUTH-TOKEN-HERE  # Replace with your LocalStack Pro auth token
+      LAMBDA_DEBUG_MODE: 1 # Disable with 0 when not debugging lambdas
+      LOCALSTACK_LAMBDA_DEBUG_MODE_CONFIG_PATH: /tmp/lambda_debug_mode_config.yml
+    image: localstack/localstack-pro:4.10
+    ports:
+      - "4510-4559:4510-4559"
+      - "4566:4566"
+    tty: true
+    volumes:
+      # No named volumes used, bind mounts to local files + dirs only
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./debug-config.yml:/tmp/lambda_debug_mode_config.yml"
